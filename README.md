@@ -14,7 +14,7 @@
 
 ```
 AgentGRPO/
-├── agent-lightning/     # 核心训练框架 (Microsoft)
+├── agent-lightning/     # 核心Agent训练框架 (Microsoft)
 ├── reward_model/        # 奖励模型训练
 ├── sql_agent/           # SQL医学问答Agent
 ├── trl/                 # Hugging Face强化学习库
@@ -102,14 +102,12 @@ Hugging Face的Transformer强化学习库，用于奖励模型训练。
 
 - Python 3.10+
 - CUDA GPU（推荐）
-- MongoDB（可选，用于持久化存储）
 
 ### 安装依赖
 
 ```bash
-# 安装agent-lightning
-cd agent-lightning
-uv sync --group dev
+参考，使用容器进行准备训练环境。
+[奖励模型训练.md](reward_model/%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83.md)和[README.md](sql_agent/README.md)
 
 # 安装奖励模型依赖
 cd reward_model
@@ -121,70 +119,18 @@ pip install -r requirements.txt
 ```
 
 ### 训练奖励模型
-
-```bash
-cd reward_model
-
-# 1. 准备DPO格式数据
-python convert_dpo_format.py --input=raw.jsonl --output=converted.jsonl
-
-# 2. 训练奖励模型
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch reward_modeling.py \
-  --dataset_name ./converted.jsonl \
-  --model_name_or_path Qwen/Qwen2.5-7B-Instruct
-
-# 3. 合并LoRA权重
-swift export --model Qwen/Qwen2.5-7B-Instruct \
-  --adapters ./reward_model_output --merge_lora true
-```
+参考：[README.md](reward_model/README.md)
 
 ### 启动推理API
+[inference_api.py](reward_model/inference_api.py)
 
-```bash
-cd reward_model
-python inference_api.py --model_path ./merged_model
-```
-
-### 训练SQL Agent
-
-```bash
-cd sql_agent
-
-# 1. 启动外部存储服务
-agl store --port 9999
-
-# 2. 测试运行（1步）
-AGL_MANAGED_STORE=0 python train_sql_agent.py --ci-fast
-
-# 3. 完整训练
-AGL_MANAGED_STORE=0 python train_sql_agent.py \
-  --llm-proxy \
-  --model /path/to/model \
-  --external-store-address http://localhost:9999
-```
+### 训练Agent模型
+参考[README.md](sql_agent/README.md)
 
 ## 架构图
-
-```
-                            ┌─────────────────┐
-                            │   外部LLM API   │
-                            │  (DeepSeek等)   │
-                            └────────┬────────┘
-                                     │
-┌────────────────────────────────────┼────────────────────────────────────┐
-│                                    │                                    │
-│  ┌──────────────────┐     ┌───────┴───────┐     ┌──────────────────┐   │
-│  │   reward_model   │────▶│  sql_agent    │◀────│      trl         │   │
-│  │   (奖励模型)      │     │  (医学问答)    │     │  (训练工具库)     │   │
-│  └────────┬─────────┘     └───────┬───────┘     └──────────────────┘   │
-│           │                       │                                     
-│           │                       │                                     
-│           │                ┌──────┴──────┐                              
-│           │                │ agent-      │                              
-│           └───────────────▶│ lightning    │                              
-│                            │ (核心框架)   │                              
-│                            └─────────────┘                              
-```
+1. 合成训练数据，生成DPO数据集
+2. 根据DPO数据集生成奖励模型
+3. 根据奖励模型训练Agent模型
 
 ## 技术栈
 
@@ -205,6 +151,3 @@ AGL_MANAGED_STORE=0 python train_sql_agent.py \
 - `doc/reward_test.md` - 奖励模型测试记录
 - `doc/train_result_test.md` - 训练结果测试记录
 
-## 许可证
-
-本项目遵循项目原有许可证。
