@@ -1,0 +1,2 @@
+# 合并模型
+python3 -m verl.model_merger merge   --backend fsdp   --local_dir /workspace/post_train/post_train/sql_agent/checkpoints/AgentLightning/sql_agent/global_step_60/actor   --target_dir /workspace/post_train/post_train/sql_agent/qwen7B

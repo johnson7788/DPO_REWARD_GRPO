@@ -1,0 +1,4 @@
+openai-agents
+pandas
+httpx
+google-adk==1.20.0

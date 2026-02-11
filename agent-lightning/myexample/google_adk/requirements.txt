@@ -1,0 +1,5 @@
+pyarrow
+fastparquet
+agentlightning[verl,adk]
+google-adk>=0.3.0
+# google-adk==1.18.0
