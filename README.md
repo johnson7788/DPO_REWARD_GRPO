@@ -151,3 +151,7 @@ pip install -r requirements.txt
 - `doc/reward_test.md` - 奖励模型测试记录
 - `doc/train_result_test.md` - 训练结果测试记录
 
+## 📬 联系方式
+
+如有问题，请联系作者：
+![weichat.png](doc/weichat.png)
