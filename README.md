@@ -118,6 +118,9 @@ cd sql_agent
 pip install -r requirements.txt
 ```
 
+![奖励.png](doc/%E5%A5%96%E5%8A%B1.png)
+![train_reward.png](doc/train_reward.png)
+
 ### 训练奖励模型
 参考：[README.md](reward_model/README.md)
 
